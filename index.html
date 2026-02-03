@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird Ultra Edition</title>
+    <style>
+        body { margin: 0; background: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; font-family: 'Arial Black', sans-serif; }
+        canvas { border: 6px solid #333; border-radius: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.8); cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+canvas.width = 360;
+canvas.height = 580;
+
+// Oyun Sabitleri
+let score = 0;
+let highScore = localStorage.getItem("ultraHighScore") || 0;
+let gameState = "START";
+let frames = 0;
+let screenShake = 0;
+
+// Kuş Fizikleri ve Görseli
+const bird = {
+    x: 60, y: 250, w: 34, h: 24,
+    gravity: 0.22, jump: 4.8, velocity: 0, rotation: 0,
+    draw() {
+        ctx.save();
+        ctx.translate(this.x + this.w/2, this.y + this.h/2);
+        ctx.rotate(this.rotation);
+        
+        // Kanat Animasyonu
+        let wingPos = Math.sin(frames * 0.2) * 5;
+
+        // KUŞ ÇİZİMİ (Resim gerektirmez, saf kod)
+        ctx.fillStyle = "#f7d302"; // Gövde
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 18, 14, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "white"; // Göz
+        ctx.beginPath();
+        ctx.arc(8, -5, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "black"; // Göz bebeği
+        ctx.beginPath();
+        ctx.arc(10, -5, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#f75302"; // Gaga
+        ctx.beginPath();
+        ctx.moveTo(12, 0);
+        ctx.lineTo(22, 5);
+        ctx.lineTo(12, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.restore();
+    },
+    update() {
+        if(gameState === "START") {
+            this.y = 250 + Math.sin(frames * 0.1) * 15;
+            this.rotation = Math.sin(frames * 0.05) * 0.1;
+            return;
+        }
+        this.velocity += this.gravity;
+        this.y += this.velocity;
+        this.rotation = Math.min(Math.PI/4, Math.max(-Math.PI/4, this.velocity * 0.1));
+
+        if (this.y + this.h >= canvas.height - 50) triggerGameOver();
+    }
+};
+
+// Boru Sistemi
+const pipes = {
+    list: [],
+    width: 60,
+    gap: 120,
+    update() {
+        if(gameState !== "PLAYING") return;
+        if(frames % 90 === 0) {
+            let offset = Math.random() * 200 - 100;
+            this.list.push({ x: canvas.width, y: (canvas.height/2 - 250) + offset, passed: false });
+        }
+        this.list.forEach((p, i) => {
+            p.x -= 2.5;
+            // Çarpışma
+            if(bird.x + 25 > p.x && bird.x < p.x + this.width) {
+                if(bird.y < p.y + 300 || bird.y + bird.h > p.y + 300 + this.gap) triggerGameOver();
+            }
+            // Skor
+            if(!p.passed && p.x + this.width < bird.x) {
+                score++; p.passed = true;
+            }
+            if(p.x < -100) this.list.splice(i, 1);
+        });
+    },
+    draw() {
+        this.list.forEach(p => {
+            ctx.fillStyle = "#73bf2e"; // Yeşil Boru
+            ctx.strokeStyle = "#2e4d12";
+            ctx.lineWidth = 3;
+            // Üst Boru
+            ctx.fillRect(p.x, p.y, this.width, 300);
+            ctx.strokeRect(p.x, p.y, this.width, 300);
+            // Alt Boru
+            ctx.fillRect(p.x, p.y + 300 + this.gap, this.width, 500);
+            ctx.strokeRect(p.x, p.y + 300 + this.gap, this.width, 500);
+        });
+    }
+};
+
+function triggerGameOver() {
+    if(gameState === "GAME_OVER") return;
+    gameState = "GAME_OVER";
+    screenShake = 15;
+    if(score > highScore) {
+        highScore = score;
+        localStorage.setItem("ultraHighScore", highScore);
+    }
+}
+
+function reset() {
+    bird.y = 250; bird.velocity = 0;
+    pipes.list = []; score = 0;
+    gameState = "PLAYING";
+}
+
+function loop() {
+    // Ekran Sallanması
+    ctx.save();
+    if(screenShake > 0) {
+        ctx.translate(Math.random() * screenShake, Math.random() * screenShake);
+        screenShake *= 0.9;
+    }
+
+    // Arka Plan (Dinamik Gökyüzü)
+    ctx.fillStyle = "#70c5ce";
+    ctx.fillRect(0,0, canvas.width, canvas.height);
+
+    pipes.draw();
+    pipes.update();
+    bird.draw();
+    bird.update();
+
+    // Zemin
+    ctx.fillStyle = "#ded895";
+    ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+    ctx.fillStyle = "#73bf2e";
+    ctx.fillRect(0, canvas.height - 60, canvas.width, 10);
+
+    // UI
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 4;
+    ctx.textAlign = "center";
+
+    if(gameState === "START") {
+        ctx.font = "24px Arial Black";
+        ctx.strokeText("BAŞLAMAK İÇİN DOKUN", canvas.width/2, 350);
+        ctx.fillText("BAŞLAMAK İÇİN DOKUN", canvas.width/2, 350);
+    } else {
+        ctx.font = "50px Arial Black";
+        ctx.strokeText(score, canvas.width/2, 80);
+        ctx.fillText(score, canvas.width/2, 80);
+    }
+
+    if(gameState === "GAME_OVER") {
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect(0,0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        ctx.font = "30px Arial Black";
+        ctx.fillText("OYUN BİTTİ", canvas.width/2, 250);
+        ctx.font = "20px Arial Black";
+        ctx.fillText("SKOR: " + score, canvas.width/2, 300);
+        ctx.fillText("EN YÜKSEK: " + highScore, canvas.width/2, 330);
+        ctx.font = "15px Arial Black";
+        ctx.fillText("TEKRAR İÇİN TIKLA", canvas.width/2, 400);
+    }
+
+    ctx.restore();
+    frames++;
+    requestAnimationFrame(loop);
+}
+
+const input = () => {
+    if(gameState === "START") gameState = "PLAYING";
+    else if(gameState === "PLAYING") bird.velocity = -bird.jump;
+    else if(gameState === "GAME_OVER" && screenShake < 1) reset();
+};
+
+window.addEventListener("keydown", (e) => { if(e.code === "Space") input(); });
+canvas.addEventListener("mousedown", input);
+
+loop();
+</script>
+</body>
+</html>
