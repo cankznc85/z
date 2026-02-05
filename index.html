@@ -4,128 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zeynep 💞</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;500;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #050505;
-            --card: #0c0c0c;
-            --accent: #ffffff;
-            --sub-text: #666666;
-            --gradient: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%);
+        :root { --bg: #000000; --card: #0d0d0d; --accent: #ffffff; --gray: #444; --highlight: #7c4dff; }
+        body { margin: 0; background: var(--bg); color: var(--accent); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+        
+        #loader { position: fixed; inset: 0; background: black; display: flex; align-items: center; justify-content: center; z-index: 100; transition: 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        #loader.hidden { opacity: 0; pointer-events: none; }
+
+        .container { width: 90%; max-width: 380px; opacity: 0; transform: translateY(15px); transition: 1s ease 0.8s; }
+        .container.show { opacity: 1; transform: translateY(0); }
+
+        h1 { font-size: 26px; font-weight: 800; margin-bottom: 30px; text-align: center; letter-spacing: -0.5px; }
+        
+        /* Can ve Zeynep Puan Tablosu */
+        .score-board { display: flex; justify-content: space-between; margin-bottom: 25px; gap: 10px; }
+        .score-box { 
+            flex: 1; background: var(--card); border: 1px solid #1a1a1a; padding: 15px; 
+            border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s;
+        }
+        .score-box:active { transform: scale(0.95); background: #1a1a1a; }
+        .player-name { font-size: 10px; letter-spacing: 2px; color: var(--gray); margin-bottom: 5px; display: block; }
+        .player-score { font-size: 20px; font-weight: 800; }
+
+        #display-box { 
+            background: var(--card); border: 1px solid #1a1a1a; border-radius: 28px; 
+            min-height: 180px; display: flex; align-items: center; justify-content: center; 
+            padding: 30px; margin-bottom: 25px; text-align: center;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-        }
+        .content-text { font-size: 17px; font-weight: 300; color: #eee; line-height: 1.5; transition: 0.3s; }
 
-        .container {
-            width: 85%;
-            max-width: 400px;
-            text-align: center;
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { 
+            background: #080808; border: 1px solid #1a1a1a; padding: 18px; border-radius: 18px; 
+            color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;
         }
-
-        h1 {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 40px;
-            letter-spacing: -1px;
-        }
-
-        #display-box {
-            background: var(--card);
-            border: 1px solid #1a1a1a;
-            border-radius: 24px;
-            padding: 40px 25px;
-            margin-bottom: 30px;
-            min-height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .content-text {
-            font-size: 18px;
-            font-weight: 300;
-            line-height: 1.6;
-            color: #ececec;
-        }
-
-        .category-name {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--sub-text);
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .btn {
-            background: var(--card);
-            border: 1px solid #1a1a1a;
-            padding: 18px;
-            border-radius: 16px;
-            color: var(--accent);
-            font-weight: 500;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            background: #151515;
-            border-color: #333;
-            transform: translateY(-2px);
-        }
-
-        .btn-main {
-            grid-column: span 2;
-            background: var(--accent);
-            color: var(--bg);
-            font-weight: 800;
-            border: none;
-            margin-top: 8px;
-        }
-
-        .btn-main:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
-        }
-
-        /* Zarif bir parlama efekti */
-        .glow {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #333, transparent);
-        }
+        .btn:hover { border-color: #333; }
+        .btn-main { grid-column: span 2; background: white; color: black; font-weight: 800; border: none; margin-top: 5px; }
     </style>
 </head>
 <body>
-    <div class="glow"></div>
-    <div class="container">
+
+    <div id="loader"><h1>Zeynep 💞</h1></div>
+
+    <div class="container" id="main-content">
         <h1>Zeynep 💞</h1>
         
+        <div class="score-board">
+            <div class="score-box" onclick="updateScore('can')">
+                <span class="player-name">CAN</span>
+                <span class="player-score" id="can-score">0</span>
+            </div>
+            <div class="score-box" onclick="updateScore('zeynep')">
+                <span class="player-name">ZEYNEP</span>
+                <span class="player-score" id="zeynep-score">0</span>
+            </div>
+        </div>
+
         <div id="display-box">
-            <div class="content-text">Başlamak için bir kart seç.</div>
+            <div class="content-text" id="task-text">Başlamak için bir kategori seçin.</div>
         </div>
 
         <div class="grid">
@@ -133,62 +71,40 @@
             <button class="btn" onclick="play('Anılar')">Anılar</button>
             <button class="btn" onclick="play('Tahmin')">Tahmin</button>
             <button class="btn" onclick="play('Görev')">Görev</button>
-            <button class="btn btn-main" onclick="play('Kader')">Kaderi Belirle</button>
+            <button class="btn btn-main" onclick="play('Kader')">Büyük Challenge</button>
         </div>
     </div>
 
     <script>
+        setTimeout(() => {
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('main-content').classList.add('show');
+        }, 2000);
+
+        let scores = { can: 0, zeynep: 0 };
+        function updateScore(who) {
+            scores[who]++;
+            document.getElementById(who + '-score').innerText = scores[who];
+        }
+
         const data = {
-            'Zeka': [
-                "Şu an üzerindeki kıyafetlerin tüm renklerini 5 saniye içinde sırasıyla yaz.",
-                "Alfabeyi tersten hatasız bir şekilde ilk kim ses kaydıyla atacak?",
-                "İkimizin doğum tarihlerini topla, sonucu ilk yazan puanı alır.",
-                "Gözlerini kapatarak 'Seni çok seviyorum' yaz ve at, kiminki daha düzgün?",
-                "Telefonunun pil yüzdesini ilk söyleyen kazansın."
-            ],
-            'Anılar': [
-                "İlk buluştuğumuz gün benim üzerimde ne vardı?",
-                "Birlikte izlediğimiz ilk filmi hatırlıyor musun?",
-                "Benimle ilgili en sevdiğin fotoğraf hangisi? (Atman lazım)",
-                "İlk uzun telefon konuşmamız kaç dakika sürmüştü? (Tahmin et)",
-                "Bana ilk hangi emojiyi atmıştın?"
-            ],
-            'Tahmin': [
-                "Şu an ne içmek istediğimi tahmin et.",
-                "Şu an aklımdan 1 ile 10 arası bir sayı tuttum, bil!",
-                "Bugün en çok hangi şarkıyı dinlemişimdir?",
-                "Yarın sabah kaçta uyanacağımı tahmin et, yaklaşan kazanır.",
-                "Şu an giydiğim çorabın rengini tahmin et."
-            ],
-            'Görev': [
-                "Görüntülü konuşmada 30 saniye boyunca hiç durmadan beni öv.",
-                "Hemen şimdi en şapşal halinle bir selfie çekip sadece bana at.",
-                "En sevdiğim şarkının nakaratını ses kaydıyla oku.",
-                "Bir sonraki görüşmemizde kahveler senin elinden olsun.",
-                "Telefonunun ana ekranını ekran görüntüsü at (Hemen!)"
-            ],
-            'Kader': [
-                "Bu akşamın filmine ben karar veriyorum.",
-                "Yarın sabah uyandırma araması senden geliyor.",
-                "Görüntülü konuşmada istediğim bir kıyafeti giymek zorundasın.",
-                "Bugün 1 saat boyunca bana sadece emojiyle cevap ver.",
-                "Bir sonraki buluşmada tatlılar senden!"
-            ]
+            'Zeka': ["Şu an bulunduğun odadaki en küçük nesneyi göster.", "5 saniye içinde tersten 3 meyve say.", "İkimizin yaşları toplamını ilk kim yazacak?"],
+            'Anılar': ["Benimle ilgili en sevdiğin ilk anın hangisi?", "Birlikteyken en çok güldüğümüz o anı hatırlat.", "İlk ciddi tartışmamız ne üzerineydi?"],
+            'Tahmin': ["Şu an kalbimden geçen rengi bil!", "Aklımdan 1-20 arası bir sayı tuttum, tahmin et.", "Yarın akşam yemeğinde ne yiyeceğimi bil."],
+            'Görev': ["Hemen şu an en tatlı gülümsemenle bir selfie at.", "Bana 30 saniye boyunca neden dünyanın en şanslı insanı olduğumu anlat.", "Görüntülü konuşmada bir sonraki cümleni şarkı söyler gibi kur."],
+            'Kader': ["Gelecek hafta bir gün boyunca profil fotoğrafını ben seçeceğim.", "Bir sonraki buluşmada tüm mekanları Can seçer, hesabı Zeynep öder!", "Kaybeden taraf, kazananın istediği bir şarkıda video çekip atar."]
         };
 
         function play(type) {
-            const list = type === 'Kader' ? data['Kader'] : data[type];
+            const list = data[type];
             const result = list[Math.floor(Math.random() * list.length)];
-            const box = document.getElementById('display-box');
+            const textEl = document.getElementById('task-text');
             
-            box.style.opacity = '0';
-            box.style.transform = 'scale(0.98)';
-            
+            textEl.style.opacity = '0';
             setTimeout(() => {
-                box.innerHTML = `<div><span class="category-name">${type}</span><div class="content-text">${result}</div></div>`;
-                box.style.opacity = '1';
-                box.style.transform = 'scale(1)';
-            }, 250);
+                textEl.innerHTML = `<span style="color:#555; font-size:10px; display:block; margin-bottom:10px; letter-spacing:2px;">${type.toUpperCase()}</span>${result}`;
+                textEl.style.opacity = '1';
+            }, 300);
         }
     </script>
 </body>
