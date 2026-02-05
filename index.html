@@ -8,58 +8,31 @@
     <style>
         :root { --bg: #000000; --card: #0d0d0d; --accent: #ffffff; --gray: #444; }
         body { margin: 0; background: var(--bg); color: var(--accent); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
-        
         #loader { position: fixed; inset: 0; background: black; display: flex; align-items: center; justify-content: center; z-index: 100; transition: 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
         #loader.hidden { opacity: 0; pointer-events: none; }
-
         .container { width: 90%; max-width: 380px; opacity: 0; transform: translateY(15px); transition: 1s ease 0.8s; }
         .container.show { opacity: 1; transform: translateY(0); }
-
         h1 { font-size: 26px; font-weight: 800; margin-bottom: 30px; text-align: center; letter-spacing: -0.5px; }
-        
-        /* Puan Tablosu Güncellemesi */
         .score-board { display: flex; justify-content: space-between; margin-bottom: 25px; gap: 15px; }
-        .score-box { 
-            flex: 1; background: var(--card); border: 1px solid #1a1a1a; padding: 15px; 
-            border-radius: 20px; text-align: center; position: relative;
-        }
+        .score-box { flex: 1; background: var(--card); border: 1px solid #1a1a1a; padding: 15px; border-radius: 20px; text-align: center; }
         .player-name { font-size: 10px; letter-spacing: 2px; color: var(--gray); margin-bottom: 8px; display: block; }
         .score-controls { display: flex; align-items: center; justify-content: center; gap: 15px; }
         .player-score { font-size: 24px; font-weight: 800; min-width: 30px; }
-        
-        .score-btn {
-            background: none; border: 1px solid #222; color: var(--gray);
-            width: 24px; height: 24px; border-radius: 8px; cursor: pointer;
-            font-size: 16px; display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-        }
+        .score-btn { background: none; border: 1px solid #222; color: var(--gray); width: 24px; height: 24px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .score-btn:hover { border-color: #555; color: white; }
-        .score-btn:active { transform: scale(0.9); }
-
-        #display-box { 
-            background: var(--card); border: 1px solid #1a1a1a; border-radius: 28px; 
-            min-height: 180px; display: flex; align-items: center; justify-content: center; 
-            padding: 30px; margin-bottom: 25px; text-align: center;
-        }
-
-        .content-text { font-size: 17px; font-weight: 300; color: #eee; line-height: 1.5; }
-
+        #display-box { background: var(--card); border: 1px solid #1a1a1a; border-radius: 28px; min-height: 220px; display: flex; align-items: center; justify-content: center; padding: 30px; margin-bottom: 25px; text-align: center; border-bottom: 2px solid #1a1a1a; }
+        .content-text { font-size: 16px; font-weight: 300; color: #eee; line-height: 1.6; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn { 
-            background: #080808; border: 1px solid #1a1a1a; padding: 18px; border-radius: 18px; 
-            color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;
-        }
-        .btn:hover { border-color: #333; }
+        .btn { background: #080808; border: 1px solid #1a1a1a; padding: 18px; border-radius: 18px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .btn:hover { border-color: #333; background: #111; }
         .btn-main { grid-column: span 2; background: white; color: black; font-weight: 800; border: none; margin-top: 5px; }
+        .btn-main:active { background: #ccc; }
     </style>
 </head>
 <body>
-
     <div id="loader"><h1>Zeynep 💞</h1></div>
-
     <div class="container" id="main-content">
         <h1>Zeynep 💞</h1>
-        
         <div class="score-board">
             <div class="score-box">
                 <span class="player-name">CAN</span>
@@ -78,11 +51,9 @@
                 </div>
             </div>
         </div>
-
         <div id="display-box">
-            <div class="content-text" id="task-text">Kategori seç ve başla.</div>
+            <div class="content-text" id="task-text">250+ Mücadele seni bekliyor. <br> Bir kategori seç kanki.</div>
         </div>
-
         <div class="grid">
             <button class="btn" onclick="play('Zeka')">Zeka</button>
             <button class="btn" onclick="play('Anılar')">Anılar</button>
@@ -99,29 +70,37 @@
         }, 2000);
 
         let scores = { can: 0, zeynep: 0 };
-        
-        function changeScore(player, amount) {
-            scores[player] += amount;
-            if (scores[player] < 0) scores[player] = 0; // Puan eksiye düşmesin
-            document.getElementById(player + '-score').innerText = scores[player];
+        function changeScore(p, a) {
+            scores[p] += a;
+            if (scores[p] < 0) scores[p] = 0;
+            document.getElementById(p + '-score').innerText = scores[p];
         }
 
         const data = {
-            'Zeka': ["Şu an odandaki en büyük objeyi kameraya göster.", "Tersten 3 şehir ismini ilk söyleyen kazanır.", "5 saniye içinde 8'er 8'er 80'e kadar say."],
-            'Anılar': ["Tanıştığımızda üzerimde ne renk vardı?", "En sevdiğin ortak fotoğrafımızı ilk kim atacak?", "Bana taktığın ilk lakabı hatırlıyor musun?"],
-            'Tahmin': ["Şu an aklımdaki meyveyi bil!", "1-50 arası bir sayı tuttum, tahmin et.", "Sence şu an neye gülümsüyorum?"],
-            'Görev': ["Bana 20 saniye süren çok tatlı bir ses kaydı at.", "Kameraya karşı en havalı 'cool' pozunu ver.", "Bir sonraki buluşmada giymemi istediğin şeyi söyle."],
-            'Kader': ["Yarınki sabah mesajını en yaratıcı şekilde kaybeden atar.", "Diğer buluşmada yemek seçimi kazananın olur.", "Kaybeden taraf, kazananın seçtiği bir şarkıyı bugün 5 kez dinler."]
+            'Zeka': [
+                "Ekrana bakmadan 'Zeynep seni çok seviyorum' yazıp atan puanı alır.", "Odandaki en küçük nesneyi bulup kameraya ilk kim gösterecek?", "Alfabedeki 18. harfi ilk kim yazacak?", "5 saniye içinde 5 tane 'B' harfiyle başlayan eşya say.", "Tersinden 'Muvaffakiyet' kelimesini ilk kim hatasız söyleyecek?", "6'şar 6'şar 60'a kadar ilk kim sayacak?", "Kamerayı aç ve 15 saniye boyunca gözlerini kırpmadan bak.", "Telefonunun modelini ve pil yüzdesini ilk kim yazacak?", "En sevdiğim rengi 1 saniye içinde yaz.", "Bulunduğun odadaki en eski eşyayı göster.", "Şu anki saati saniyesiyle beraber ilk kim yazacak?", "İkimizin yaşları toplamından 5 çıkar, sonucu ilk kim söyleyecek?", "Tersinden 3 tane meyve ismi say.", "Masandaki/Yanındaki en yakın nesnenin markasını ilk yazan puanı alır.", "5 saniye içinde 5 farklı Avrupa ülkesi say.", "Sırasıyla gökkuşağı renklerini ilk kim yazacak?", "En sevdiğim yemeği ilk tahmin eden puanı kapar.", "Hangi yılda tanıştığımızı ilk kim yazacak?", "Klavye ile gözü kapalı ismimi ilk kim hatasız yazacak?", "Birbirimizden kaç kilometre uzaktayız? (Tam rakama en yakın kazanan)", "Telefonunda en çok kullanılan 3 uygulamayı ilk kim sayacak?", "İsmimin harf sayısının 3 katı kaçtır?", "Şu an üzerindeki kıyafetlerin tüm renklerini tek seferde yaz.", "5 saniye içinde 5 tane dizi ismi say.", "Tersinden 'Teşekkürler' de.", "Gözü kapalı 'Mesafe tanımıyoruz' yazıp at.", "Son aradığın numarayı ilk kim ekran görüntüsü atacak?", "Kamerada 10 saniye boyunca tek ayak üstünde dur.", "En sevdiğin tatlıyı ilk kim tahmin edecek?", "Evdeki en yakın aynayı bul ve kendine öpücük at.", "Alfabeyi G'den M'ye kadar hızlıca say.", "Birbirimize attığımız ilk mesajın saatini ilk tahmin eden puanı alır.", "3 tane çiçek ismi say (3 saniyede).", "Ekrandaki bir şeye tıklamadan sadece sol elinle bir mesaj at.", "Yandaki odada kim var? İlk yazan bilir.", "Haftanın 4. günü hangisidir?", "Kamerada komik bir şapka/aksesuar uydur ve tak.", "Bir sonraki buluşma tarihimize kaç gün kaldı?", "En son dinlediğin şarkının ismini ilk yazan kazanır.", "Kameraya en yakın yeşil objeyi göster.", "Aramızda geçen son kelimeyi ilk kim yazacak?", "Gözlerini 10 saniye kapatıp içinden say, bitince 'BİTTİ' yaz. Kim 10 saniyeye en yakın?", "İsmimdeki sessiz harfleri ilk kim yazacak?", "Kamerayı aç ve bize bir 'rock' selamı ver.", "Yanında su var mı? İlk içen puanı alır.", "Kameraya en sevdiğin bardağını göster.", "Saçının en uzun telini bulup göster (şaka şaka, gülümse!)", "Hangi gün tanıştık? Sadece günü yaz.", "Kameraya elindeki en yakın kağıdı göster.", "Telefon rehberinde 'Z' harfiyle başlayan kaç kişi var? Tahmin et."
+            ],
+            'Anılar': [
+                "İlk buluştuğumuzda hava nasıldı?", "Bana taktığın ilk lakabı söyle.", "İlk yemeğimizi nerede yemiştik?", "Birlikte izlediğimiz ilk film neydi?", "Bana attığın ilk emojiyi hatırla.", "En sevdiğin ortak fotoğrafımızı hemen at.", "Hangi şarkı bizi anlatıyor?", "Benimle ilgili ilk izlenimin neydi?", "İlk uzun telefon konuşmamız kaç dakika sürdü?", "Benimle ilgili en sevdiğin anın hangisi?", "Beni ilk gördüğünde üzerimde ne vardı?", "Birbirimize verdiğimiz ilk hediye neydi?", "İlk tartıştığımız konuyu hatırlıyor musun?", "Tanıştığımız gün hangi gündü?", "En son ne zaman beraber çok güldük?", "Benimleyken yaptığın en büyük sakarlık neydi?", "Hangi yemeği beraber ilk kez denedik?", "İlk tatil/gezi planımız nereyeydi?", "En sevdiğimiz ortak mekan neresi?", "Bana gönderdiğin ilk ses kaydında ne demiştin?", "Hangi özelliğim seni ilk etkileyen şey oldu?", "İkimiz için özel olan bir tarih söyle.", "Bana ilk 'Seni seviyorum' dediğin yer neresi?", "Benimle ilgili unutamadığın bir detay söyle.", "İlk buluşma heyecanını 1-10 arası puanla.", "Seninleyken en çok huzur bulduğum an hangisi?", "Birlikteyken çekindiğimiz ilk selfie hangisi?", "En sevdiğin kıyafetim hangisi?", "Hangi filmde beraber ağladık veya güldük?", "En saçma tartışmamız ne üzerineydi?", "İlk kahve randevumuz neresiydi?", "Benimle ilgili en çok özlediğin şey ne?", "Tanışmamıza kim vesile oldu veya nasıl oldu?", "Bana gönderdiğin ilk video neydi?", "En sevdiğimiz ortak oyun/aktivite?", "İkimizin de sevmediği o ortak şey ne?", "Hangi parfümü sıktığımda hoşuna gider?", "En son ne zaman bana çiçek aldın veya gönderdin?", "Beni telefona ilk ne diye kaydetmiştin?", "Hangi özelliğim sana seni hatırlatıyor?", "Birlikteyken yaşadığımız en garip olay?", "En sevdiğin gülüşüm hangisi?", "Bana en çok hangi rengi yakıştırıyorsun?", "İlk buluşmaya kim geç kalmıştı?", "Benimle ilgili en büyük hayalin ne?", "Hangi yemeği sana yapmamı istersin?", "En son ne için bana teşekkür ettin?", "Seninle ilgili bildiğim ama kimsenin bilmediği o şey?", "Beraber çekindiğimiz en son fotoğraf hangisi?", "Aramızdaki en komik iç şaka (insider joke) hangisi?"
+            ],
+            'Tahmin': [
+                "Şu an aklımdan 1-50 arası bir sayı tuttum, bil!", "Bugün en çok hangi kelimeyi kullandım?", "Şu an hangi elimle telefonu tutuyorum?", "Yarın sabah kaçta uyanacağım?", "Şu an modum 10 üzerinden kaç?", "Şu an ne içmek istiyorum?", "Aklımdan geçen rengi tahmin et.", "Cebimde şu an ne var?", "Şu an hangi şarkıyı mırıldanıyorum?", "Bugün en son ne yedim?", "En sevdiğim tatlıyı tahmin et.", "Şu an üzerimde ne renk çorap var?", "Kamerayı açmadan önce hangi pozu vereceğimi bil.", "Yarın akşam ne yiyeceğim?", "Şu an en çok neyi özledim?", "Aklımdaki hayvanı tahmin et.", "Telefonumda kaç okunmamış mesaj var?", "Şu an yanımda kim var (veya ne var)?", "En sevdiğim dizi karakteri hangisi?", "Bugün kaç adım atmışımdır?", "Şu an saçım ne tarafa yatık?", "En son kime mesaj attım?", "Hangi parmağımla ekrana dokunuyorum?", "Şu an canım ne çekiyor?", "En sevdiğim mevsim hangisi?", "Şu an odada ışık yanıyor mu?", "Klavye dilim şu an ne?", "Son dinlediğim şarkının türü ne?", "Şu an ayağımda ne var?", "Aklımdan geçen şehri bil.", "Gelecek yaz nereye gitmek istiyorum?", "En sevdiğim spor dalı hangisi?", "Şu anki kalp atış hızım (tahminen)?", "Bugün kaç kez seni düşündüm?", "En sevdiğim çiçek hangisi?", "Hangi telefonu almak istiyorum?", "Şu anki oda sıcaklığım kaç derece?", "En sevdiğim film türü hangisi?", "Şu an aklımdaki emojiyi tahmin et.", "Hangi sosyal medya uygulamasındayım?", "Bugün kaç bardak su içtim?", "En sevdiğim marka hangisi?", "Şu an kapı kapalı mı açık mı?", "Hangi gözüm daha çok yorgun?", "En sevdiğim dondurma aroması?", "Aklımdaki tarihi bil (bir gün).", "Şu anki pil yüzdem çift mi tek mi?", "Hangi tarafıma yatıp uyuyacağım?", "En sevdiğim araba markası?", "Aklımdaki son kelimeyi bil!"
+            ],
+            'Görev': [
+                "Hemen en şapşal halinle bir selfie at.", "30 saniye boyunca beni öven bir ses kaydı at.", "Kamerayı aç ve 10 saniye boyunca hiç gülme.", "En sevdiğim şarkının nakaratını söyle.", "Sadece emoji kullanarak bana bir mesaj at.", "Telefonun ana ekranını ekran görüntüsü at.", "Hemen kameraya bir öpücük gönder.", "10 saniye boyunca kamera karşısında dans et.", "En sevdiğin aksesuarını takıp poz ver.", "Bana 'Seni seviyorum' de (sesli).", "Kamerayı aç ve bana en havalı bakışını at.", "Telefonundaki en son fotoğrafı bana at.", "Bana bir şarkı öner ve hemen dinleyelim.", "Gözlerini kapatıp 5 saniye bekle ve sonra gülümse.", "Odandaki en komik şeyi göster.", "Kameraya karşı model yürüyüşü yap.", "Bir sonraki buluşma için bana bir söz ver.", "Bana bir şiir uydur (4 mısra).", "Hemen şimdi su iç ve kameraya göster.", "Kamerada bana bir kalp yap.", "En sevdiğin emojiyi taklit et.", "Kamerayı aç ve en ciddi halini göster.", "Bana bir bilmece sor.", "Telefonunda en sevmediğin uygulamayı sil (şaka, sadece göster).", "Görüntülü konuşmada bir sonraki cümleni fısıldayarak söyle.", "Kameraya en sevdiğin bardağı göster.", "Bana bir sırrını ver (küçük bir şey).", "Ekrana bir kez dokun ve dilek tut.", "Hemen şimdi bana bir 'good vibes' mesajı at.", "En son aldığın şeyi kameraya göster.", "Kameraya karşı 'Can/Zeynep seni çok seviyorum' diye bağır (fısıltıyla da olur).", "Bir sonraki kahve ısmarlama sözü ver.", "Kamerada 5 saniye boyunca donup kal.", "Bana bir fotoğrafını at (şu anki halinle).", "Hemen bir şarkı başlat ve 10 saniye dans et.", "Kameraya karşı en sevdiğin yemeği yiyormuş gibi yap.", "Bana bir sonraki buluşma için kombin öner.", "Kamerayı aç ve saçını düzelt.", "Telefonunla bir ayna pozu ver ve at.", "Bana 'Günaydın' mesajı taslağı hazırla.", "En komik çocukluk anını anlat.", "Kameraya karşı kaşlarını oynat.", "Bana bir hayvan taklidi yap (sesli).", "Telefonunda kaç alarm kurulu? Ekran görüntüsü at.", "Kameraya karşı bir 'evet' bir 'hayır' de.", "Bana bugün yaptığın en güzel şeyi anlat.", "Kamerayı aç ve bana göz kırp.", "En sevdiğin kalemini/eşyanı göster.", "Bana bir sonraki tatil için 3 yer say.", "Kamerayı kapat ve 5 saniye sonra 'Ce-ee' yaparak aç."
+            ],
+            'Kader': [
+                "Yarın sabahki günaydın mesajı kaybedenden gelir (çok romantik olacak!).", "Bir sonraki buluşmada tüm yemekleri kazanan seçer.", "Kaybeden taraf bugün 1 saat boyunca her mesajına kalp koyar.", "İlk buluşmada tatlılar kaybeden taraftan.", "Kazanan, kaybedenin profil fotoğrafını 24 saatliğine seçer.", "Kaybeden taraf bugün kazananın istediği bir şarkıyı 5 kez dinler.", "Bir sonraki görüşmede kahveler kaybedenden.", "Kaybeden, kazanan için 1 dakikalık övgü videosu çeker.", "Bugün tüm kararları kazanan verir (ne izlenecek vs.).", "Kaybeden, kazananın en sevdiği yemeği sipariş eder (veya yapar).", "Gelecek hafta bir gün boyunca sabah uyandırma araması kaybedenden.", "Kaybeden, kazananın istediği bir kelimeyi 10 kez mesajla yazar.", "Bir sonraki buluşma rotasını kazanan çizer.", "Kaybeden taraf, kazananın istediği bir tweet'i/postu beğenir.", "Kaybeden, kazananın sevdiği bir oyunu onunla oynamak zorunda.", "Bugün kaybeden taraf 'Hayır' diyemez (makul ölçülerde!).", "Kaybeden, bir sonraki randevuya küçük bir sürprizle gelir.", "Kazanan, kaybedene bir lakap takar ve 1 hafta öyle seslenilir.", "Kaybeden, kazananın istediği bir kıyafeti giyer.", "Bugün akşamki film/dizi seçim hakkı kazananın.", "Kaybeden, kazanan için bir çalma listesi oluşturur.", "Gelecek ilk buluşmada hesabı kaybeden öder.", "Kaybeden, kazananın seçtiği bir emojiyi 1 gün boyunca durumunda tutar.", "Kazanan, kaybedene bir görev verir ve o an yapılmak zorunda.", "Kaybeden, kazananın en sevdiği fotoğrafını wallpaper yapar.", "Bir sonraki tatil planında son söz kazananın olur.", "Kaybeden, kazanan için el yapımı bir şey hazırlar.", "Bugün kaybeden taraf tüm iltifatları toplar.", "Kaybeden, kazananın istediği bir hikayeyi anlatır.", "Kazanan, kaybedenin bir sonraki Instagram story'sini seçer.", "Kaybeden, kazananın istediği bir ses tonuyla konuşur (5 dk).", "Gelecek ilk randevuda çiçekler kaybeden taraftan.", "Kaybeden, kazananın en sevdiği abur cuburu alır.", "Bugün kaybeden taraf daha çok dinleyici olur.", "Kazanan, kaybedene bir ceza verir (hafif ve eğlenceli).", "Kaybeden, kazanan için bir dilek hakkı tanır.", "Bir sonraki sinema biletleri kaybedenden.", "Kaybeden, kazananın istediği bir dansı yapar.", "Kazanan, kaybedenin bugün ne giyeceğine karar verir.", "Kaybeden, kazanan için bir iyilik borçlanır.", "Bugün kaybeden tarafın 'Trip atma' hakkı elinden alınır.", "Kazanan, kaybedene bir şarkı armağan eder ve kaybeden onu paylaşır.", "Kaybeden, kazananın en sevdiği meyveyi soyar/hazırlar.", "Bir sonraki sabah kahvaltısı kaybedenden.", "Kaybeden, kazananın istediği bir uygulamayı indirir.", "Kazanan, kaybedene bir bilmece sorar, bilemezse ceza artar.", "Kaybeden, kazananın istediği bir fotoğrafı siler/saklar.", "Bugün kaybeden taraf her şeye 'Peki aşkım' der.", "Kaybeden, kazananın istediği bir kitabı okumaya başlar.", "Final: Kazanan bugün dünyanın en mutlu insanı ilan edilir!"
+            ]
         };
 
         function play(type) {
             const list = data[type];
             const result = list[Math.floor(Math.random() * list.length)];
             const textEl = document.getElementById('task-text');
-            
             textEl.style.opacity = '0';
             setTimeout(() => {
-                textEl.innerHTML = `<span style="color:#555; font-size:10px; display:block; margin-bottom:10px; letter-spacing:2px;">${type.toUpperCase()}</span>${result}`;
+                textEl.innerHTML = `<span style="color:#555; font-size:10px; display:flex; justify-content:center; margin-bottom:15px; letter-spacing:2px; border-bottom:1px solid #1a1a1a; padding-bottom:5px;">${type.toUpperCase()}</span>${result}`;
                 textEl.style.opacity = '1';
             }, 300);
         }
