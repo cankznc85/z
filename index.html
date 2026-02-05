@@ -6,7 +6,7 @@
     <title>Zeynep 💞</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;500;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #000000; --card: #0d0d0d; --accent: #ffffff; --gray: #444; --highlight: #7c4dff; }
+        :root { --bg: #000000; --card: #0d0d0d; --accent: #ffffff; --gray: #444; }
         body { margin: 0; background: var(--bg); color: var(--accent); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
         
         #loader { position: fixed; inset: 0; background: black; display: flex; align-items: center; justify-content: center; z-index: 100; transition: 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -17,15 +17,24 @@
 
         h1 { font-size: 26px; font-weight: 800; margin-bottom: 30px; text-align: center; letter-spacing: -0.5px; }
         
-        /* Can ve Zeynep Puan Tablosu */
-        .score-board { display: flex; justify-content: space-between; margin-bottom: 25px; gap: 10px; }
+        /* Puan Tablosu Güncellemesi */
+        .score-board { display: flex; justify-content: space-between; margin-bottom: 25px; gap: 15px; }
         .score-box { 
             flex: 1; background: var(--card); border: 1px solid #1a1a1a; padding: 15px; 
-            border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s;
+            border-radius: 20px; text-align: center; position: relative;
         }
-        .score-box:active { transform: scale(0.95); background: #1a1a1a; }
-        .player-name { font-size: 10px; letter-spacing: 2px; color: var(--gray); margin-bottom: 5px; display: block; }
-        .player-score { font-size: 20px; font-weight: 800; }
+        .player-name { font-size: 10px; letter-spacing: 2px; color: var(--gray); margin-bottom: 8px; display: block; }
+        .score-controls { display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .player-score { font-size: 24px; font-weight: 800; min-width: 30px; }
+        
+        .score-btn {
+            background: none; border: 1px solid #222; color: var(--gray);
+            width: 24px; height: 24px; border-radius: 8px; cursor: pointer;
+            font-size: 16px; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .score-btn:hover { border-color: #555; color: white; }
+        .score-btn:active { transform: scale(0.9); }
 
         #display-box { 
             background: var(--card); border: 1px solid #1a1a1a; border-radius: 28px; 
@@ -33,7 +42,7 @@
             padding: 30px; margin-bottom: 25px; text-align: center;
         }
 
-        .content-text { font-size: 17px; font-weight: 300; color: #eee; line-height: 1.5; transition: 0.3s; }
+        .content-text { font-size: 17px; font-weight: 300; color: #eee; line-height: 1.5; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn { 
@@ -52,18 +61,26 @@
         <h1>Zeynep 💞</h1>
         
         <div class="score-board">
-            <div class="score-box" onclick="updateScore('can')">
+            <div class="score-box">
                 <span class="player-name">CAN</span>
-                <span class="player-score" id="can-score">0</span>
+                <div class="score-controls">
+                    <button class="score-btn" onclick="changeScore('can', -1)">-</button>
+                    <span class="player-score" id="can-score">0</span>
+                    <button class="score-btn" onclick="changeScore('can', 1)">+</button>
+                </div>
             </div>
-            <div class="score-box" onclick="updateScore('zeynep')">
+            <div class="score-box">
                 <span class="player-name">ZEYNEP</span>
-                <span class="player-score" id="zeynep-score">0</span>
+                <div class="score-controls">
+                    <button class="score-btn" onclick="changeScore('zeynep', -1)">-</button>
+                    <span class="player-score" id="zeynep-score">0</span>
+                    <button class="score-btn" onclick="changeScore('zeynep', 1)">+</button>
+                </div>
             </div>
         </div>
 
         <div id="display-box">
-            <div class="content-text" id="task-text">Başlamak için bir kategori seçin.</div>
+            <div class="content-text" id="task-text">Kategori seç ve başla.</div>
         </div>
 
         <div class="grid">
@@ -82,17 +99,19 @@
         }, 2000);
 
         let scores = { can: 0, zeynep: 0 };
-        function updateScore(who) {
-            scores[who]++;
-            document.getElementById(who + '-score').innerText = scores[who];
+        
+        function changeScore(player, amount) {
+            scores[player] += amount;
+            if (scores[player] < 0) scores[player] = 0; // Puan eksiye düşmesin
+            document.getElementById(player + '-score').innerText = scores[player];
         }
 
         const data = {
-            'Zeka': ["Şu an bulunduğun odadaki en küçük nesneyi göster.", "5 saniye içinde tersten 3 meyve say.", "İkimizin yaşları toplamını ilk kim yazacak?"],
-            'Anılar': ["Benimle ilgili en sevdiğin ilk anın hangisi?", "Birlikteyken en çok güldüğümüz o anı hatırlat.", "İlk ciddi tartışmamız ne üzerineydi?"],
-            'Tahmin': ["Şu an kalbimden geçen rengi bil!", "Aklımdan 1-20 arası bir sayı tuttum, tahmin et.", "Yarın akşam yemeğinde ne yiyeceğimi bil."],
-            'Görev': ["Hemen şu an en tatlı gülümsemenle bir selfie at.", "Bana 30 saniye boyunca neden dünyanın en şanslı insanı olduğumu anlat.", "Görüntülü konuşmada bir sonraki cümleni şarkı söyler gibi kur."],
-            'Kader': ["Gelecek hafta bir gün boyunca profil fotoğrafını ben seçeceğim.", "Bir sonraki buluşmada tüm mekanları Can seçer, hesabı Zeynep öder!", "Kaybeden taraf, kazananın istediği bir şarkıda video çekip atar."]
+            'Zeka': ["Şu an odandaki en büyük objeyi kameraya göster.", "Tersten 3 şehir ismini ilk söyleyen kazanır.", "5 saniye içinde 8'er 8'er 80'e kadar say."],
+            'Anılar': ["Tanıştığımızda üzerimde ne renk vardı?", "En sevdiğin ortak fotoğrafımızı ilk kim atacak?", "Bana taktığın ilk lakabı hatırlıyor musun?"],
+            'Tahmin': ["Şu an aklımdaki meyveyi bil!", "1-50 arası bir sayı tuttum, tahmin et.", "Sence şu an neye gülümsüyorum?"],
+            'Görev': ["Bana 20 saniye süren çok tatlı bir ses kaydı at.", "Kameraya karşı en havalı 'cool' pozunu ver.", "Bir sonraki buluşmada giymemi istediğin şeyi söyle."],
+            'Kader': ["Yarınki sabah mesajını en yaratıcı şekilde kaybeden atar.", "Diğer buluşmada yemek seçimi kazananın olur.", "Kaybeden taraf, kazananın seçtiği bir şarkıyı bugün 5 kez dinler."]
         };
 
         function play(type) {
